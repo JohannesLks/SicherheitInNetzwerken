@@ -38,21 +38,35 @@
         }
       },
       async submitNumber() {
-        this.validateInput();
-        if (this.errorMessage) {
-          return;
-        }
-        try {
-          const response = await axios.post('URL_DES_SERVERS', { number: this.number });
-          this.responseMessage = response.data.message;
-          this.number = null; // Feld leeren nach erfolgreichem Senden
-        } catch (error) {
-          console.error('Fehler beim Senden der Daten: ', error);
-          this.responseMessage = 'Fehler beim Senden der Daten';
-        }
-      }
+    this.validateInput();
+    if (this.errorMessage) {
+        return; // Beendet die Methode frühzeitig, falls Validierungsfehler vorhanden sind
     }
-  };
+    try {
+        const response = await axios.post('http://fh-kiel.com:81/backend.php', { number: this.number });
+        
+        // Aktualisiert die responseMessage mit der Nachricht vom Server
+        this.responseMessage = response.data.message;
+        
+        // Setzt die eingegebene Zahl zurück, wenn die Anfrage erfolgreich war
+        this.number = null;
+    } catch (error) {
+        // Fängt Netzwerkfehler und zeigt eine Fehlermeldung an
+        if (error.response) {
+            // Der Server antwortete mit einem Statuscode außerhalb des Bereichs von 2xx
+            console.error('Fehler beim Senden der Daten: ', error.response.data);
+            this.responseMessage = error.response.data.message || 'Ein unbekannter Fehler ist aufgetreten';
+        } else if (error.request) {
+            // Die Anfrage wurde gesendet, aber keine Antwort wurde empfangen
+            console.error('Keine Antwort vom Server', error.request);
+            this.responseMessage = 'Keine Antwort vom Server';
+        } else {
+            // Etwas anderes hat den Fehler ausgelöst
+            console.error('Fehler: ', error.message);
+            this.responseMessage = 'Fehler beim Senden der Daten';
+        }
+    }
+}}};
   </script>
   
   <style scoped>
