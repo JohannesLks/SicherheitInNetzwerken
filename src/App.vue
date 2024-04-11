@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import IntegerForm from './components/johannes.vue';
+import IntegerForm from './components/johannes_labor3.vue';
 
 export default {
   name: 'App',
